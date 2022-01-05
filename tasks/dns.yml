@@ -1,0 +1,45 @@
+- name: Fail if neither IPv4 nor IPv6
+  fail:
+    msg: "Setting missing for IPv4 or IPv6"
+  when: not (udm_utilities_dns_ipv4_enabled|bool or udm_utilities_dns_ipv6_enabled|bool)
+
+- name: add dns IPv4 conflist
+  template:
+    src: templates/20-dns.conflist.j2
+    dest: "{{udm_utilities_cni_netd}}/20-dns.conflist"
+  when: udm_utilities_dns_ipv4_enabled | bool
+
+- name: add dns IPv6 conflist
+  template:
+    src: templates/20-dnsipv6.conflist.j2
+    dest: "{{udm_utilities_onboot_directory}}/20-dnsipv6.conflist"
+  when: udm_utilities_dns_ipv6_enabled | bool
+
+- name: add dns script
+  template:
+    src: templates/10-dns.sh.j2
+    dest:  "{{udm_utilities_onboot_directory}}/10-dns.sh"
+
+- name: Install pihole
+  block:
+  - name: Create a directory if it does not exist
+    file:
+      path: /mnt/data/etc-pihole
+      state: directory
+      mode: '0775'
+  - name: Create a directory if it does not exist
+    file:
+      path: /mnt/data/pihole/etc-dnsmasq.d
+      state: directory
+      mode: '0755'
+  - name:
+    template:
+      src: templates/recreate_pihole_container.sh.j2
+      dest: /mnt/data/pihole/recreate_pihole_container.sh
+      mode: '0755'
+  - name: "create {{udm_utilities_dns_provider}} container"
+    shell: /mnt/data/pihole/recreate_pihole_container.sh
+  when: udm_utilities_dns_provider == "pihole"
+
+- name: run dns script
+  shell: "{{udm_utilities_onboot_directory}}/10-dns.sh"

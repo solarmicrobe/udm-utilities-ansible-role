@@ -1,0 +1,7 @@
+- name: add script to install CNI
+  template:
+    src: templates/05-install-cni-plugins.sh.j2
+    dest: "{{udm_utilities_onboot_directory}}/05-install-cni-plugins.sh"
+
+- name: "execute {{udm_utilities_onboot_directory}}/05-install-cni-plugins.sh"
+  shell: "{{udm_utilities_onboot_directory}}/05-install-cni-plugins.sh"

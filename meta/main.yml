@@ -1,0 +1,12 @@
+---
+
+galaxy_info:
+  author: solarmicrobe
+  description: Ansible role to install and configure udm-utilities
+  license: GPLv2
+  platforms:
+    - name: UbiOS
+      versions:
+        - "v1"
+  galaxy_tags: [system]
+dependencies: []

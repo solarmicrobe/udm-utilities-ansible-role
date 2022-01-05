@@ -1,0 +1,24 @@
+{
+  "cniVersion": "0.4.0",
+  "name": "dns",
+  "plugins": [
+    {
+      "type": "macvlan",
+      "mode": "bridge",
+      "master": "br5",
+      "mac": "{{udm_utilities_dns_ipv4_mac_address}}",
+      "ipam": {
+        "type": "static",
+        "addresses": [
+          {
+            "address": "{{udm_utilities_dns_ipv4_ip}}/{{udm_utilities_dns_ipv4_prefix}}",
+            "gateway": "{{udm_utilities_dns_ipv4_gateway}}"
+          }
+        ],
+        "routes": [
+          {"dst": "0.0.0.0/0"}
+        ]
+      }
+    }
+  ]
+}

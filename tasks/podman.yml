@@ -1,0 +1,4 @@
+- name: add script to update podman
+  template:
+    src: templates/01-podman-updates.sh.j2
+    dest: "{{udm_utilities_onboot_directory}}/01-podman-updates.sh"

@@ -1,0 +1,5 @@
+- name: add script for container-common
+  lineinfile:
+    path: /etc/containers/libpod.conf
+    regexp: 'max_log_size = -1'
+    line: 'max_log_size = 104857600'

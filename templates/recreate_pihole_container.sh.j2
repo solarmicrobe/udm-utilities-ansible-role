@@ -1,0 +1,23 @@
+#!/usr/bin/env sh
+# Change to boostchicken/pihole:latest for DoH
+# Change to boostchicken/pihole-dote:latest for DoTE
+IMAGE=pihole/pihole:latest
+
+podman pull $IMAGE
+podman stop pihole
+podman rm pihole
+podman rmi pihole
+podman create --network dns --restart always \
+    --name {{udm_utilities_dns_provider}} \
+    -e TZ="{{udm_utilities_dns_timezone}}" \
+    -v "/mnt/data/etc-pihole/:/etc/pihole/" \
+    -v "/mnt/data/pihole/etc-dnsmasq.d/:/etc/dnsmasq.d/" \
+    {% for server in udm_utilities_dns_upstream_servers %}
+    --dns={{server}} \
+    {% endfor %}
+    --hostname pi.hole \
+    -e VIRTUAL_HOST="pi.hole" \
+    -e PROXY_LOCATION="pi.hole" \
+    -e ServerIP="{{udm_utilities_dns_ipv4_ip}}" \
+    -e IPv6="{{udm_utilities_dns_ipv6_enabled}}" \
+    $IMAGE

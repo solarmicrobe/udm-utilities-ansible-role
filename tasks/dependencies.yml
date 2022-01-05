@@ -1,0 +1,28 @@
+---
+- name: udm_utilities_container_common_enabled
+  set_fact:
+    udm_utilities_container_common_enabled: true
+  when: udm_utilities_update_podman_enabled|bool or udm_utilities_cni_enabled|bool or udm_utilities_dns_enabled|bool
+
+- name: udm_utilities_cni_enabled
+  set_fact:
+    udm_utilities_cni_enabled: true
+  when: udm_utilities_update_podman_enabled|bool or udm_utilities_dns_enabled|bool
+
+- name: Determine if ipv4 is enabled
+  set_fact:
+    udm_utilities_dns_ipv4_enabled: true
+  when:
+    - (udm_utilities_dns_ipv4_ip is defined) and (udm_utilities_dns_ipv4_ip != None)
+    - (udm_utilities_dns_ipv4_mac_address is defined) and (udm_utilities_dns_ipv4_mac_address != None)
+    - (udm_utilities_dns_ipv4_prefix is defined) and (udm_utilities_dns_ipv4_prefix != None)
+    - (udm_utilities_dns_ipv4_gateway is defined) and (udm_utilities_dns_ipv4_gateway != None)
+
+- name: Determine if ipv6 is enabled
+  set_fact:
+    udm_utilities_dns_ipv6_enabled: true
+  when:
+    - (udm_utilities_dns_ipv6_ip is defined) and (udm_utilities_dns_ipv6_ip != None)
+    - (udm_utilities_dns_ipv6_mac_address is defined) and (udm_utilities_dns_ipv6_mac_address != None)
+    - (udm_utilities_dns_ipv6_prefix is defined) and (udm_utilities_dns_ipv6_prefix != None)
+    - (udm_utilities_dns_ipv6_gateway is defined) and (udm_utilities_dns_ipv6_gateway != None)

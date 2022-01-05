@@ -1,0 +1,78 @@
+---
+- name: Python prerequisite
+  command: "ln -s $(podman inspect unifi-os -f {{ '{{' }}.GraphDriver.Data.MergedDir}})/usr/bin/python3 /usr/bin/python"
+  args:
+    creates: /usr/bin/python
+
+- name: Get udm-boot release version
+  github_release:
+    user: boostchicken
+    repo: udm-utilities
+    action: latest_release
+  delegate_to: localhost
+  register: github_udm_onboot_release_version
+  when: udm_onboot_release_version is not defined
+
+- name: Cache fact udm_boot_release_version
+  set_fact:
+    udm_onboot_release_version: "{{github_udm_onboot_release_version.tag}}"
+    cacheable: yes
+  when: udm_onboot_release_version is not defined
+
+
+- name: Get udm-boot installed version
+  command: podman exec -ti unifi-os dpkg-query --showformat='${Version}' --show udm-boot
+  register: udm_boot_installed_version
+  changed_when: false
+
+- name: udm-boot version check
+  fail:
+    msg: "udm-boot need updated (Released: {{udm_onboot_release_version}}, Installed: {{udm_boot_installed_version.stdout}}, {{ udm_boot_installed_version.stdout is version(udm_onboot_release_version, '<') }})"
+  when:
+    - udm_utilities_onboot_fail_on_update
+    - not udm_utilities_onboot_update
+    - udm_boot_installed_version.stdout is version(udm_onboot_release_version, '<')
+
+- name: Cleanup super old udm-utilities config
+  command: "{{ item }}"
+  with_items:
+    - podman exec -ti unifi-os rm -f /etc/init.d/udm.sh
+    - podman exec -ti unifi-os systemctl disable udmboot
+    - podman exec -ti unifi-os rm -f /etc/systemd/system/udmboot.service
+  ignore_errors: yes
+  changed_when: false
+  when: udm_utilities_disable_old_version
+
+- name: "{{udm_utilities_onboot_directory}}"
+  file:
+    path: "{{udm_utilities_onboot_directory}}"
+    state: directory
+
+- name: Setup on-boot script
+  command: "{{ item }}"
+  with_items:
+    - "podman exec -ti unifi-os curl -L https://udm-boot.boostchicken.dev -o /tmp/udm-boot_{{udm_onboot_release_version}}_all.deb"
+    - "podman exec -ti unifi-os dpkg -i /tmp/udm-boot_{{udm_onboot_release_version}}_all.deb"
+  when:
+    - udm_utilities_onboot_update
+    - udm_boot_installed_version.stdout is version(udm_onboot_release_version, '<')
+
+- name: Determine dependencies
+  import_tasks: dependencies.yml
+
+- name: Include comtainer common
+  include_tasks: container.yml
+  when: udm_utilities_container_common_enabled|bool
+
+- name: Include Podman
+  include_tasks: podman.yml
+  when: udm_utilities_update_podman_enabled|bool
+
+- name: Include CNI
+  include_tasks: cni.yml
+  when: udm_utilities_cni_enabled|bool
+
+- name: Include DNS
+  # Must be after CNI
+  include_tasks: dns.yml
+  when: udm_utilities_dns_enabled|bool
