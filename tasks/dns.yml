@@ -32,12 +32,12 @@
       path: /mnt/data/pihole/etc-dnsmasq.d
       state: directory
       mode: '0755'
-  - name:
+  - name: Add recreation script
     template:
       src: templates/recreate_pihole_container.sh.j2
       dest: /mnt/data/pihole/recreate_pihole_container.sh
       mode: '0755'
-  - name: "create {{udm_utilities_dns_provider}} container"
+  - name: "Create {{udm_utilities_dns_provider}} container"
     shell: /mnt/data/pihole/recreate_pihole_container.sh
   when: udm_utilities_dns_provider == "pihole"
 

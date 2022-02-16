@@ -1,0 +1,15 @@
+- name: add startup for mtu
+  copy:
+    src: 10-monitor-mtu.sh
+    dest: "{{udm_utilities_onboot_directory}}/10-monitor-mtu.sh"
+    mode: '0755'
+  when: udm_utilities_jumbo_frames_enabled | bool
+
+- name: add mtu changer
+  template:
+    src: 11-change-mtu.sh.j2
+    dest: "{{utm_utilities_data_directory}}/11-change-mtu.sh"
+    mode: '0755'
+
+- name: run jumbo frames script
+  shell: "{{udm_utilities_onboot_directory}}/10-monitor-mtu.sh"

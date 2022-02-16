@@ -60,7 +60,7 @@
 - name: Determine dependencies
   import_tasks: dependencies.yml
 
-- name: Include comtainer common
+- name: Include container common
   include_tasks: container.yml
   when: udm_utilities_container_common_enabled|bool
 
@@ -76,3 +76,8 @@
   # Must be after CNI
   include_tasks: dns.yml
   when: udm_utilities_dns_enabled|bool
+
+- name: Include Jumbo Frames
+  # Must be after CNI
+  include_tasks: jumboframes.yml
+  when: udm_utilities_jumbo_frames_enabled|bool

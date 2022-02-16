@@ -5,6 +5,7 @@
 udm_utilities_disable_old_version: false
 udm_utilities_onboot_update: false
 udm_utilities_onboot_fail_on_update: false
+utm_utilities_data_directory: /mnt/data/
 udm_utilities_onboot_directory: /mnt/data/on_boot.d
 
 # Container setup
@@ -48,3 +49,7 @@ udm_utilities_dns_upstream_servers:
   - 127.0.0.1
   - 1.1.1.1
   - 8.8.8.8
+
+# Jumbo frame vars
+udm_utilities_jumbo_frames_enabled: false
+udm_utilities_jumbo_frames_interval: 5
