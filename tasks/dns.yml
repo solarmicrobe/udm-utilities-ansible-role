@@ -39,6 +39,14 @@
       mode: '0755'
   - name: "Create {{udm_utilities_dns_provider}} container"
     shell: /mnt/data/pihole/recreate_pihole_container.sh
+
+  - name: "Validate DNS record lookup for pi.hole@{{udm_utilities_dns_ipv4_ip}}"
+    debug: msg="{{ lookup('dig', 'pi.hole', '@'+udm_utilities_dns_ipv4_ip )}}"
+    vars:
+      dns_response: "{{ lookup('dig', 'pi.hole', '@'+udm_utilities_dns_ipv4_ip )}}"
+    retries: 9
+    delay: 1
+    until: dns_response and dns_response != "NXDOMAIN"
   when: udm_utilities_dns_provider == "pihole"
 
 - name: run dns script
