@@ -27,18 +27,23 @@
       path: /mnt/data/etc-pihole
       state: directory
       mode: '0775'
+
   - name: Create a directory if it does not exist
     file:
       path: /mnt/data/pihole/etc-dnsmasq.d
       state: directory
       mode: '0755'
+
   - name: Add recreation script
     template:
       src: templates/recreate_pihole_container.sh.j2
       dest: /mnt/data/pihole/recreate_pihole_container.sh
       mode: '0755'
-  - name: "Create {{udm_utilities_dns_provider}} container"
+    register: recreation_script
+
+  - name: "Start {{udm_utilities_dns_provider}} container"
     shell: /mnt/data/pihole/recreate_pihole_container.sh
+    when: recreation_script.changed or udm_utilities_dns_force_container_recreation|bool
 
   - name: "Validate DNS record lookup for pi.hole@{{udm_utilities_dns_ipv4_ip}}"
     debug: msg="{{ lookup('dig', 'pi.hole', '@'+udm_utilities_dns_ipv4_ip )}}"

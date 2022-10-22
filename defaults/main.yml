@@ -31,7 +31,9 @@ udm_utilities_cni_checksum: sha256
 
 # DNS vars
 udm_utilities_dns_enabled: false
-udm_utilities_dns_provider: pihole #pihole or adguard
+udm_utilities_dns_provider: pihole
+udm_utilities_dns_provider_image: pihole/pihole:latest
+udm_utilities_dns_force_container_recreation: false
 udm_utilities_dns_vlan: 5
 udm_utilities_dns_ipv4_enabled: false
 udm_utilities_dns_ipv4_ip: 10.0.5.3

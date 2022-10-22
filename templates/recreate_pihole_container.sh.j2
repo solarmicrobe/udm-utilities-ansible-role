@@ -1,13 +1,13 @@
 #!/usr/bin/env sh
 # Change to boostchicken/pihole:latest for DoH
 # Change to boostchicken/pihole-dote:latest for DoTE
-IMAGE=pihole/pihole:latest
+IMAGE={{udm_utilities_dns_provider_image}}
 
 podman pull $IMAGE
-podman stop pihole
-podman rm pihole
-podman rmi pihole
-podman create --network dns --restart always \
+podman stop {{udm_utilities_dns_provider}}
+podman rm {{udm_utilities_dns_provider}}
+podman rmi {{udm_utilities_dns_provider}}
+podman run --network dns --restart always \
     --name {{udm_utilities_dns_provider}} \
     -e TZ="{{udm_utilities_dns_timezone}}" \
     -v "/mnt/data/etc-pihole/:/etc/pihole/" \
