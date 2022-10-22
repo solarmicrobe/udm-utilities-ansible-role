@@ -55,3 +55,22 @@ udm_utilities_dns_upstream_servers:
 # Jumbo frame vars
 udm_utilities_jumbo_frames_enabled: false
 udm_utilities_jumbo_frames_interval: 5
+# Node Exporter vars
+udm_utilities_nodeexporter_enabled: false
+udm_utilities_nodeexporter_image: quay.io/prometheus/node-exporter:latest
+udm_utilities_nodeexporter_force_container_recreation: false
+udm_utilities_nodeexporter_disable_default_collectors:
+  - bcache
+  - btrfs
+  - dmi
+  - fibrechannel
+  - infiniband
+  - mdadm
+  - nfs
+  - nfsd
+  - pressure
+  - rapl
+  - schedstat
+  - tapestats
+udm_utilities_nodeexporter_enable_collectors:
+  - cgroups

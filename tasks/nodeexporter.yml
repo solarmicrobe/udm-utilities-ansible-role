@@ -1,0 +1,16 @@
+- name: Create /mnt/data/nodeexporter if it does not exist
+  file:
+    path: /mnt/data/nodeexporter
+    state: directory
+    mode: '0755'
+
+- name: Add recreation script
+  template:
+    src: templates/recreate_nodeexporter_container.sh.j2
+    dest: /mnt/data/nodeexporter/recreate_nodeexporter_container.sh
+    mode: '0755'
+  register: nodeexporter_script
+
+- name: "Start nodeexporter container"
+  shell: /mnt/data/nodeexporter/recreate_nodeexporter_container.sh
+  when: nodeexporter_script.changed or udm_utilities_nodeexporter_force_container_recreation|bool

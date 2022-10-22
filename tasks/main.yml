@@ -81,3 +81,7 @@
   # Must be after CNI
   include_tasks: jumboframes.yml
   when: udm_utilities_jumbo_frames_enabled|bool
+
+- name: Include Node Exporter
+  include_tasks: nodeexporter.yml
+  when: udm_utilities_nodeexporter_enabled|bool

@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+IMAGE={{udm_utilities_nodeexporter_image}}
+
+podman pull $IMAGE
+podman stop nodeexporter
+podman rm nodeexporter
+podman rmi nodeexporter
+podman run -d \
+  --name=nodeexporter \
+  --net="host" \
+  --pid="host" \
+  -v "/:/host:ro,rslave" \
+  quay.io/prometheus/node-exporter:latest \
+  --path.rootfs=/host \
+{% for collector in udm_utilities_nodeexporter_enable_collectors %}
+  --collector.{{collector}} \
+{% endfor %}
+{% for collector in udm_utilities_nodeexporter_disable_default_collectors %}
+  --no-collector.{{collector}} \
+{% endfor %}
